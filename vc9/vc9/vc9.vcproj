@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)../BasicExcel_demo/&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)../include/&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -86,6 +86,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy &quot;$(ProjectDir)res/example1.xls&quot; &quot;$(OutDir)&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -172,11 +173,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\BasicExcel_demo\BasicExcelVC6.cpp"
+				RelativePath="..\..\cpp\BasicExcel.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\BasicExcel_demo\YExcel.cpp"
+				RelativePath=".\YExcel.cpp"
 				>
 			</File>
 		</Filter>
