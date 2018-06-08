@@ -5165,7 +5165,7 @@ void BasicExcel::UpdateWorksheets()
 
 		// References and pointers to shorten code
 		vector<Worksheet::CellTable::RowBlock>& rRowBlocks = worksheets_[s].cellTable_.rowBlocks_;
-		vector<Worksheet::CellTable::RowBlock::CellBlock>* pCellBlocks;
+		vector<Worksheet::CellTable::RowBlock::CellBlock>* pCellBlocks = NULL;
 		Worksheet::CellTable::RowBlock::CellBlock* pCell;
 		rRowBlocks.resize(maxRows/32 + (maxRows%32 ? 1 : 0));
 		for (size_t r=0, curRowBlock=0; r<maxRows; ++r)
