@@ -83,7 +83,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;$(ProjectDir)res\example1.xls&quot; &quot;$(OutDir)&quot;"
+				CommandLine="::copy &quot;$(ProjectDir)\res\example1.xls&quot; &quot;$(OutDir)\&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -165,6 +165,10 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath=".\test.cpp"
+				>
+			</File>
 			<File
 				RelativePath=".\YExcel.cpp"
 				>

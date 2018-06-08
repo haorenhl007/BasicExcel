@@ -14,7 +14,7 @@ bool Block::Create(const wchar_t* filename)
 // PROMISE: Return true if file is successfully created and opened, false if otherwise.
 {
 	// Create new file
-	size_t filenameLength = wcslen(filename);
+	size_t filenameLength = wcslen(filename) * 2;
 	char* name = new char[filenameLength+1];
 	wcstombs(name, filename, filenameLength);
 	name[filenameLength] = 0;
@@ -34,7 +34,7 @@ bool Block::Open(const wchar_t* filename, ios_base::openmode mode)
 // PROMISE: Return true if file is successfully opened, false if otherwise.
 {
 	// Open existing file for reading or writing or both
-	size_t filenameLength = wcslen(filename);
+	size_t filenameLength = wcslen(filename) * 2;
 	filename_.resize(filenameLength+1, 0);
 	wcstombs(&*(filename_.begin()), filename, filenameLength);
 
@@ -935,7 +935,7 @@ int CompoundFile::PresentWorkingDirectory(char* path)
 	int ret = PresentWorkingDirectory(wpath);
 	if (ret == SUCCESS)
 	{
-		pathLength = wcslen(wpath);
+		pathLength = wcslen(wpath) * 2;
 		wcstombs(path, wpath, pathLength);
 		path[pathLength] = 0;
 	}
@@ -949,7 +949,7 @@ int CompoundFile::PresentWorkingDirectory(vector<char>& path)
 	int ret = PresentWorkingDirectory(wpath);
 	if (ret == SUCCESS)
 	{
-		size_t pathLength = wpath.size();
+		size_t pathLength = wpath.size() * 2;
 		path.resize(pathLength);
 		wcstombs(&*(path.begin()), &*(wpath.begin()), pathLength);
 		path[pathLength] = 0;
@@ -2687,13 +2687,13 @@ size_t LargeString::ContinueRead(const char* data, size_t size)
 		if (phonetic_) npos += 4;
 
 		size_t strpos = name_.size();
-		name_.resize(strpos+size, 0);
+		name_.resize(strpos+size*2, 0);
 		if (unicode & 1)
 		{
 			// String to be read is in unicode
 			vector<wchar_t> name(size);
 			LittleEndian::ReadString(data, &*(name.begin()), npos, size);
-			wcstombs(&*(name_.begin())+strpos, &*(name.begin()), size);
+			wcstombs(&*(name_.begin())+strpos, &*(name.begin()), size*2);
 			npos += size * SIZEOFWCHAR_T;
 		}
 		else
@@ -4505,6 +4505,23 @@ bool BasicExcel::Load(const char* filename)
 	else return false;
 }
 
+bool BasicExcel::Load(const wchar_t* filename)
+{
+	if (file_.IsOpen()) file_.Close();
+	if (file_.Open(filename))
+	{
+		workbook_ = Workbook();
+		worksheets_.clear();
+
+		vector<char> data;
+		file_.ReadFile("Workbook", data);
+		Read(&*(data.begin()), data.size());
+		UpdateYExcelWorksheet();
+		return true;
+	}
+	else return false;
+}
+
 // Save current Excel workbook to opened file.
 bool BasicExcel::Save()
 {
@@ -4565,9 +4582,18 @@ BasicExcelWorksheet* BasicExcel::GetWorksheet(const char* name)
 	size_t maxWorksheets = yesheets_.size();
 	for (size_t i=0; i<maxWorksheets; ++i)
 	{
-		if (workbook_.boundSheets_[i].name_.unicode_ & 1) continue;
-		if (strcmp(name, workbook_.boundSheets_[i].name_.name_) == 0) return &(yesheets_[i]);
-	}
+		if (workbook_.boundSheets_[i].name_.unicode_ & 1) 
+        {
+            size_t len = strlen(name);
+            wstring wsName(len + 1, 0);
+            mbstowcs(&wsName[0], name, len);
+            if (wcsncmp(&wsName[0], workbook_.boundSheets_[i].name_.wname_, wcslen(&wsName[0])) == 0) return &(yesheets_[i]);
+        } else {
+		    if (strcmp(name, workbook_.boundSheets_[i].name_.name_) == 0) return &(yesheets_[i]);
+        }
+    }
+
+
 	return 0;
 }
 
@@ -4578,8 +4604,15 @@ BasicExcelWorksheet* BasicExcel::GetWorksheet(const wchar_t* name)
 	size_t maxWorksheets = yesheets_.size();
 	for (size_t i=0; i<maxWorksheets; ++i)
 	{
-		if (!(workbook_.boundSheets_[i].name_.unicode_ & 1)) continue;
-		if (wcscmp(name, workbook_.boundSheets_[i].name_.wname_) == 0) return &(yesheets_[i]);
+		if (!(workbook_.boundSheets_[i].name_.unicode_ & 1)) 
+        {
+            size_t len = wcslen(name) * 2;
+            string sName(len + 1, 0);
+            wcstombs(&sName[0], name, len);
+            if (strncmp(&sName[0], workbook_.boundSheets_[i].name_.name_, strlen(&sName[0])) == 0) return &(yesheets_[i]);
+        } else {
+		    if (wcscmp(name, workbook_.boundSheets_[i].name_.wname_) == 0) return &(yesheets_[i]);
+        }
 	}
 	return 0;
 }
@@ -5829,10 +5862,15 @@ void BasicExcelCell::SetString(const char* str)
 	size_t length = strlen(str);
 	if (length > 0)
 	{
-		type_ = STRING;
-		str_ = vector<char>(length+1);
-		strcpy(&*(str_.begin()), str);
-		wstr_.clear();
+		type_ = WSTRING;
+        wstr_ = vector<wchar_t>(length + 1);
+        mbstowcs(&wstr_[0], str, length);
+        str_.clear();
+
+		//type_ = STRING;
+		//str_ = vector<char>(length+1);
+		//strcpy(&*(str_.begin()), str);
+		//wstr_.clear();
 	}
 	else EraseContents();
 }

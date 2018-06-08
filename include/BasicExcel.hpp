@@ -1119,6 +1119,7 @@ public:
 public: // File functions.
 	void New(int sheets=3);	///< Create a new Excel workbook with a given number of spreadsheets (Minimum 1).
 	bool Load(const char* filename);	///< Load an Excel workbook from a file.
+	bool Load(const wchar_t* filename);	///< Load an Excel workbook from a file.
 	bool Save();	///< Save current Excel workbook to opened file.
 	bool SaveAs(const char* filename);	///< Save current Excel workbook to a file.
 

@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vc9", "vc9\vc9.vcproj", "{ED4AAD8C-0A21-4871-844B-4F666641EF49}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcproj", "{DC1B5A28-A85F-4542-9678-F28B6BB1C1AE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{ED4AAD8C-0A21-4871-844B-4F666641EF49} = {ED4AAD8C-0A21-4871-844B-4F666641EF49}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
